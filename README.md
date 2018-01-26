@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Dockerized Shiny App
 =======================
 
@@ -54,3 +55,7 @@ If you have a PaaS with Dockerfiles support, like [Deis](http://deis.io/) or [Do
 This project is not an alternative Shiny Server. It exposes PORT 80 (not 3838) and is intented to serve only single shiny apps.
 
 
+=======
+# fragility_ma
+fragility index evaluation for meta-analyses
+>>>>>>> 20ee84cba7e88b9b99f86ff79f00a2a75bd06a22
