@@ -14,21 +14,16 @@ shinyServer(
                     studlab = STUDY_ID,
                     data = data(),
                     method = ifelse(input$method=="IV","Inverse",input$method),
-                    sm=ifelse(input$measure=="PETO_OR","OR",input$measure),
+                    sm=input$measure,
                     comb.random = input$random=="YES",
                     comb.fixed = input$random=="NO",
                     RR.cochrane = TRUE)
             })
-        
-        #output$view <- renderTable({
-        #    head(data())
-        #})
-                            
-        output$initPlot <- renderPlot({
-            forest(meta1(),layout="RevMan5",
-                   plotwidth = "15cm")
-
-        })
+                                    
+        observe({
+            output$initPlot <- renderPlot({
+                forest_plot(meta1())
+                }, height = 200*nrow(data())/7 + 40)})
 
         pval <- reactive({
             ifelse(input$random=="YES", meta1()$pval.random, meta1()$pval.fixed)
@@ -64,22 +59,32 @@ shinyServer(
                     studlab = STUDY_ID,
                     data = fragility()[[2]],
                     method = isolate(ifelse(input$method=="IV","Inverse",input$method)),
-                    sm= isolate(ifelse(input$measure=="PETO_OR","OR",input$measure)),
+                    sm= isolate(input$measure),
                     comb.random = isolate(input$random=="YES"),
                     comb.fixed = isolate(input$random=="NO"),
                     RR.cochrane = TRUE)
             })
 
-        
+        #modifs_frag <- reactive({
+        modifs_frag <- reactiveValues(val = NULL)
+                
+        observeEvent(fragility(),{
+            modifs_frag$val <- data()[,c("EVENTS_1","EVENTS_2")] - fragility()[[2]][,c("EVENTS_1","EVENTS_2")]
+        })
+
         output$fragility_index <- renderText({
-            paste0("Fragility Index is ",fragility()[[1]])
+            paste0("and ",fragility()[[1]]," event modification", 
+                   ifelse(fragility()[[1]]==1," is","s are")," needed to change the conclusion.")
         })
+        output$fragility_index2 <- renderText({
+            paste0("Fragility index = ",fragility()[[1]])
+        })
+                
         
-        output$fragilePlot <- renderPlot({
-            forest(meta2(),layout="RevMan5",
-#                   squaresize = 1,
-                   plotwidth = "15cm")
-        })
+        observe({
+            output$fragilePlot <- renderPlot({
+                forest_plot(meta2(),fragile = TRUE, modifs = modifs_frag$val)
+                }, height = 200*nrow(data())/7 + 40)})
                 
         outputOptions(output, "show", suspendWhenHidden = FALSE)         
         

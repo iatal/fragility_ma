@@ -16,7 +16,7 @@ rev_ma <- function(data,method,random,measure){
         meta1 <- metabin(event.e=EVENTS_1, n.e=TOTAL_1, event.c=EVENTS_2, n.c=TOTAL_2,
                          data = dbin,
                          method = ifelse(method=="IV","Inverse",method),
-                         sm=ifelse(measure=="PETO_OR","OR",measure),
+                         sm = measure,
                          RR.cochrane = TRUE)
 
         #For fragility, we calculate the exponnential of the CI, even if measure = RD
@@ -272,5 +272,121 @@ frag_ma_ns <- function(data,method,random,measure){
 
     return(list(min(frag),list(ddoiA,ddoiB)[[which.min(frag)]]))
 
-}        
-        
+}  
+                        
+                        
+##############################################################################                        
+#text output
+rn1 <- function(x){
+    l <- strsplit(as.character(10*round(x,1)),"")
+    sapply(l,function(y){
+        if(length(y)==1) y <- c("0",y)
+        paste(c(y[-length(y)],".",y[length(y)]),collapse="")})
+}
+
+rn2 <- function(x){
+    l <- strsplit(as.character(100*round(x,2)),"")
+    sapply(l,function(y){
+        if(length(y)<3) y <- c(rep("0",3-length(y)),y)
+        paste(c(y[-c(-1:0+length(y))],".",y[-1:0+length(y)]),collapse="")})
+}
+
+           
+#forest plots
+                        
+forest_plot <- function(meta1, fragile=FALSE, modifs = NULL){
+    
+    cex <- 1.2
+    n <- length(meta1$event.e)
+
+    font_std <- rep(1,n)
+    font_ev1 <- rep(1,n)
+    font_ev2 <- rep(1,n)
+    
+    if(fragile==TRUE){
+        font_std[modifs$EVENTS_1!=0 | modifs$EVENTS_2!=0] <- 2
+        font_ev1[modifs$EVENTS_1!=0] <- 2
+        font_ev2[modifs$EVENTS_2!=0] <- 2
+        }
+    
+    par(mar = c(2,1,1,1))
+    layout(matrix(c(1,1,1,1,1,1,1,2,2,2), nrow = 1))
+
+    plot(c(-1,1),c(-0.5,n+2.5),type = "n", yaxt = "n", xaxt = "n", bty="n")
+    text("Arm A", x= -0.3, y = n+2, adj = 1, font = 2,cex=cex)
+    text("Arm B", x= 0.1, y = n+2, adj = 1, font = 2,cex=cex)
+    text("Study", x= -1, y = n+1, adj = 0, font = 2,cex=cex)
+    text("Events", x= c(-0.5,-0.1), y = n+1, adj = 1, font = 2,cex=cex)
+    text("Totals", x= c(-0.3,0.1), y = n+1, adj = 1, font = 2,cex=cex)    
+    text("Weight", x= 0.4, y = n+1, adj = 1, font = 2,cex=cex)    
+    text(meta1$studlab, x= -1, y = n:1, adj = 0,cex=cex, font = font_std)
+    text(meta1$event.e, x= -0.5, y = n:1, adj = 1,cex=cex, font = font_ev1)
+    text(meta1$n.e, x= -0.3, y = n:1, adj = 1,cex=cex)
+    text(meta1$event.c, x= -0.1, y = n:1, adj = 1,cex=cex, font = font_ev2)
+    text(meta1$n.c, x= 0.1, y = n:1, adj = 1,cex=cex)
+    
+    if(meta1$comb.fixed==TRUE){
+        text(paste(rn1(100*meta1$w.fixed/sum(meta1$w.fixed)),"%",sep=""),
+                   x= 0.4, y = n:1, adj = 1,cex=cex)
+        text(rn2(exp(meta1$TE.fixed)),x= 0.6, y = 0, adj = 1, font = 2,cex=cex)
+        text(paste("[",as.character(rn2(exp(meta1$lower.fixed))),"--",
+                   as.character(rn2(exp(meta1$upper.fixed))),"]",sep=""),
+                   x= 0.62, y = 0, adj = 0, font = 2,cex=cex)        
+        text("Fixed", x= 0.8, y = n+1, adj = 0, font=2,cex=cex)
+    }
+
+    if(meta1$comb.random==TRUE){
+        text(paste(rn1(100*meta1$w.random/sum(meta1$w.random)),"%",sep=""),
+                   x= 0.4, y = n:1, adj = 1,cex=cex)
+        text(rn2(exp(meta1$TE.random)),x= 0.6, y = 0, adj = 1, font = 2,cex=cex)
+        text(paste("[",as.character(rn2(exp(meta1$lower.random))),"--",
+                   as.character(rn2(exp(meta1$upper.random))),"]",sep=""),
+                   x= 0.62, y = 0, adj = 0, font = 2,cex=cex)        
+        text("Random", x= 0.8, y = n+1, adj = 0, font=2,cex=cex)
+    }
+
+    text(rn2(exp(meta1$TE)),x= 0.6, y = n:1, adj = 1,cex=cex)
+    text(paste("[",as.character(rn2(exp(meta1$lower))),"--",
+               as.character(rn2(exp(meta1$upper))),"]",sep=""),
+               x= 0.62, y = n:1-0.03, adj = 0,cex=cex)
+
+    text("Total (95%CI)", x= -1, y = 0, adj = 0, font=2,cex=cex)
+    text(sum(meta1$n.e), x= -0.3, y = 0, adj = 1, font = 2,cex=cex)
+    text(sum(meta1$n.c), x= 0.1, y = 0, adj = 1, font = 2,cex=cex)
+
+    text(meta1$sm, x= 0.6, y = n+2, adj = 0, font=2,cex=cex)
+    text(meta1$method, x= 0.6, y = n+1, adj = 0, font=2,cex=cex)
+
+    plot(c(0.01,100),c(-0.5,n+2.5),log = "x", type = "n", yaxt = "n", xaxt = "n",bty = "n")
+    axis(1, at=c(0.01,0.1,1,10,100),labels=c("0.01","0.1","1","10","100"),cex.axis=cex)
+    text(meta1$sm, x= 1, y = n+2, adj = 0, font=2,cex=cex)
+    text(meta1$method, x= 1, y = n+1, adj = 0, font=2,cex=cex)
+    lines(x = c(1,1), y = c(-1,0.5+n))
+    
+    points(x = exp(meta1$TE), 
+           y = n:1,pch = 3)
+    segments(x0 = exp(meta1$upper), x1 = exp(meta1$lower), y0 = n:1, y1 = n:1)
+
+    if(meta1$comb.fixed==TRUE){
+        lines(x = exp(c(meta1$TE.fixed,meta1$TE.fixed)), y = c(-1,0.5+n), lty = 3)
+        msq <- max(meta1$w.fixed)
+        rect(xleft = exp(meta1$TE - (meta1$w.fixed/msq)*0.4), 
+             ybottom = n:1 - (meta1$w.fixed/msq)*0.48,
+             xright = exp(meta1$TE + (meta1$w.fixed/msq)*0.4), 
+             ytop = n:1 + (meta1$w.fixed/msq)*0.45, col = "blue")
+        polygon(x =exp(c(meta1$TE.fixed,meta1$lower.fixed,meta1$TE.fixed,meta1$upper.fixed)), 
+                y = c(-0.2,0,0.2,0), col="black")        
+    }
+    
+    if(meta1$comb.random==TRUE){
+        lines(x = exp(c(meta1$TE.random,meta1$TE.random)), y = c(-1,0.5+n), lty = 3)
+        msq <- max(meta1$w.random)
+        rect(xleft = exp(meta1$TE - (meta1$w.random/msq)*0.4), 
+             ybottom = n:1 - (meta1$w.random/msq)*0.48,
+             xright = exp(meta1$TE + (meta1$w.random/msq)*0.4), 
+             ytop = n:1 + (meta1$w.random/msq)*0.45, col = "blue")
+        polygon(x =exp(c(meta1$TE.random,meta1$lower.random,meta1$TE.random,meta1$upper.random)), 
+                y = c(-0.2,0,0.2,0), col="black")        
+    }
+    
+}
