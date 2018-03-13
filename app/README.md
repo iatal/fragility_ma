@@ -1,8 +1,11 @@
 TO DO:
-- [ ] in forest plot, correct names for methods, etc
+- [x] in forest plot, correct names for methods, etc
 - [ ] in forest plot, for RD, put absolute values, not log
+- [x] in forest plot, add heterogeneity
 - [ ] add a "see details" button to see trial level modifications
 - [ ] csv file upload: remove existing datasets when uploading a dataset
-- [ ] csv file upload: add programmed conditions
+- [x] csv file upload: add programmed conditions
 - [ ] csv file upload: write explanation (variable names, etc, maybe show the example as a table)
-- [ ] add condition for Peto and OR
+- [x] add condition for Peto and OR
+- [ ] add "computing"
+- [ ] about: explanation of fragility index, references, "example", github to fragility function
