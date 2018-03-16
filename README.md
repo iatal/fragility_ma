@@ -1,4 +1,4 @@
-Dockerized Shiny App
+## Dockerization of the Shiny App for Fragility Index of meta-analyses
 =======================
 
 This is the Dockerized Shiny App Fragility MA
@@ -17,11 +17,3 @@ docker run --rm -p 80:80 iatal/fragility_ma
 
 and it will avaliable at http://127.0.0.1/ or http://localhost
 
-=============================
-TO DO:
-- [ ] in forest plot, for RD, put absolute values, not log
-- [ ] add a "see details" button to see trial level modifications
-- [ ] csv file upload: remove existing datasets when uploading a dataset
-- [ ] csv file upload: write explanation (variable names, etc, maybe show the example as a table)
-- [ ] add "computing"
-- [ ] about: explanation of fragility index, references, "example", github to fragility function

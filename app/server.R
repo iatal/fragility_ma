@@ -80,7 +80,8 @@ shinyServer(
 
         output$is_significant <- renderText({
             cat(file=stderr(), "statistical significativity set", "\n")
-            paste0("The meta-analysis is statistically ",ifelse(pval()<0.05,"","non-"),"significant")
+            paste0("Forest plot of a statistically ",ifelse(pval()<0.05,"","non-"),
+                   "significant meta-analysis of ",nrow(data()), " trials")
         })
 
         #For hiding the results when someone changes a value    
@@ -131,8 +132,8 @@ shinyServer(
         })
 
         output$fragility_index <- renderText({
-            paste0("and ",fragility()[[1]]," specific event-status modification", 
-                   ifelse(fragility()[[1]]==1," is","s are")," needed to change the conclusion to statistically ",
+            paste0("After ",fragility()[[1]]," specific event-status modification", 
+                   ifelse(fragility()[[1]]==1," is","s,")," the conclusion of the meta-analysis was turned to statistically ",
                    ifelse(pval()<0.05,"non-",""),"significant.")
         })
         output$fragility_index2 <- renderText({
