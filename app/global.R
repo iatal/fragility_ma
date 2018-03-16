@@ -12,6 +12,8 @@ example <- read.csv("./data/example.csv")
 #measure <- "RR"
 
 #upload fraglity functions
-sapply(paste0("functions_fragility/",list.files("functions_fragility/")),source)
+sapply(paste0("functions_fragility/",
+              list.files("functions_fragility/")[grep(".R",list.files("functions_fragility/"),fixed=TRUE)]),
+       source)
 #upload app functions
 sapply(paste0("functions_app/",list.files("functions_app/")),source)

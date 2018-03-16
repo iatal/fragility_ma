@@ -2,6 +2,11 @@
 ############################################################################
 frag_ma <- function(data,method,random,measure){
 
+    #data should have as columns: EVENTS_1, EVENTS_2, TOTAL_1, TOTAL_2
+    #method can be: "Inverse", "MH" or "PETO"
+    #random can be: "YES" or "NO"
+    #measure can be: "RR","RD" or "OR"
+
     frag <- 0
     ddoi <- data
     

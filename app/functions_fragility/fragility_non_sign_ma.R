@@ -1,6 +1,11 @@
 #Fragility function for statistically non-significant results
 frag_ma_ns <- function(data,method,random,measure){    
     
+    #data should have as columns: EVENTS_1, EVENTS_2, TOTAL_1, TOTAL_2
+    #method can be: "Inverse", "MH" or "PETO"
+    #random can be: "YES" or "NO"
+    #measure can be: "RR","RD" or "OR"
+
     ddoi <- data
     frag <- c(0,0)
     ddoiA <- ddoi
