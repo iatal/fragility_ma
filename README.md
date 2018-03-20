@@ -12,8 +12,7 @@ The image is available from [Docker Hub](https://hub.docker.com/r/iatal/fragilit
 To run this Shiny App on your computer:
 
 ```sh
-docker run --rm -p 80:80 iatal/fragility_ma
+docker run --rm -p 444:80 iatal/fragility_ma
 ```
 
-and it will avaliable at http://127.0.0.1/ or http://localhost
-
+and it will avaliable at http://localhost:444

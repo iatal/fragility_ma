@@ -14,7 +14,7 @@ Here we provide functions to evaluate the Fragility Index of:
 
 The statistical significance and the fragility index of the meta-analysis are relative to the measure (eg risk ratio, odds ratio or risk difference) and method used (eg mantel-haenszel, inverse variance or peto, as well as fixed or random effects) to pool the treatment effect. The pooled treatment effect according to specific methods is implemented based on the R package `meta` in the function `revman_ma.R`.
 
-- Data should have as columns: `EVENTS\_1, EVENTS\_2, TOTAL\_1, TOTAL\_2`
+- Data should have as columns: `EVENTS_1, EVENTS_2, TOTAL_1, TOTAL_2`
 - method can be: `"Inverse"`, `"MH"` or `"PETO"`
 - random can be: `"YES"` or `"NO"`
 - measure can be: `"RR"`,`"RD"` or `"OR"`

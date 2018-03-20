@@ -3,9 +3,29 @@ library(shiny)
 `%then%` <- shiny:::`%OR%`
 
 shinyServer(
-	function(input,output){
+	function(input,output,session){
         
-            
+        output$ex_table <- renderTable(example)
+
+        #Mooving across tabs
+        observeEvent(input$jumpToData, {
+            updateTabsetPanel(session, "inTabset",
+                              selected = "data")
+            })
+        observeEvent(input$jumpToMethod, {
+            updateTabsetPanel(session, "inTabset",
+                              selected = "method")
+            })
+        observeEvent(input$jumpToFragility, {
+            updateTabsetPanel(session, "inTabset",
+                              selected = "fragility")
+            })
+        observeEvent(input$jumpToFragility2, {
+            updateTabsetPanel(session, "inTabset",
+                              selected = "fragility")
+            })
+        
+        
         data <- reactive({
                         
             if (is.null(input$file1)) return(example)
@@ -146,7 +166,7 @@ shinyServer(
                 forest_plot(meta2(),fragile = TRUE, modifs = modifs_frag$val)
                 }, height = 200*nrow(data())/7 + 40)})
                 
-        outputOptions(output, "show", suspendWhenHidden = FALSE)         
+        outputOptions(output, "show", suspendWhenHidden = FALSE) 
         
 })
 
