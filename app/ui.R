@@ -51,14 +51,16 @@ shinyUI(
                                  choices = c("Fixed effects" = "NO",
                                              "Random effects" = "YES"),
                                  selected = "NO"),
-                     tags$p(tags$strong("3- Evaluate the Fagility Index")),
-                     actionButton("compute_fragility", "Evaluate the Fagility Index!"),
+                     tags$p(tags$strong("3- Evaluate the Fragility Index")),
+                     actionButton("compute_fragility", "Evaluate the Fragility Index!"),
                      width = 3),
                  
                  mainPanel(
                      h4(textOutput("is_significant"),align="center"),
                      plotOutput("initPlot",width = "100%",height = "auto"),
                      tags$hr(),
+                     conditionalPanel(condition="$('html').hasClass('shiny-busy') & output.show == false",
+                                      tags$div(h4("Loading..."),id="loadmessage")),
                      conditionalPanel(condition = "output.show == true",       
                                       tags$div(style = "border: 1px solid black",
                                                h4(textOutput("fragility_index"),align="center"),

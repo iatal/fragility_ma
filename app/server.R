@@ -118,15 +118,21 @@ shinyServer(
         output$show <- reactive({
             return(values$show)
         })
-
+        
+            
         #Bouton: calcul de fragilité
         fragility <- eventReactive(input$compute_fragility, {
             
             validate(need(input$method!="PETO" | (input$method=="PETO" & input$measure=="OR"),
               "Peto's method is only possible with Measure = Odds Ratio"))
 
-            if(pval()<0.05) frag_ma(data(),input$method,input$random,input$measure)
-                else frag_ma_ns(data(),input$method,input$random,input$measure)
+#            withProgress(message = 'Calculating Fragility', value = 0, {
+                
+                if(pval()<0.05) frag_ma(data(),input$method,input$random,input$measure)
+                    else frag_ma_ns(data(),input$method,input$random,input$measure)
+                        
+#                })
+
             })
         
         meta2 <- reactive({
