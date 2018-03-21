@@ -1,6 +1,6 @@
 #Fragility Function for statistically significant meta-analyses
 ############################################################################
-frag_ma <- function(data,method,random,measure){
+frag_ma <- function(data,method,random,measure,with_progress = FALSE, progress = NULL){
 
     #data should have as columns: EVENTS_1, EVENTS_2, TOTAL_1, TOTAL_2
     #method can be: "Inverse", "MH" or "PETO"
@@ -9,6 +9,7 @@ frag_ma <- function(data,method,random,measure){
 
     frag <- 0
     ddoi <- data
+    nb_test <- 0
     
     init <- rev_ma(ddoi,method,random,measure)
     
@@ -22,6 +23,7 @@ frag_ma <- function(data,method,random,measure){
         while(ci_up<1){
             #We test modification of upper bound of confidence interval when 
             #adding events to first arm of each study
+            
             Ladd <- sapply(1:nrow(ddoi),function(i){
                     dch <- ddoi
                     dch$EVENTS_1[i] <- dch$EVENTS_1[i] + 1
@@ -29,6 +31,7 @@ frag_ma <- function(data,method,random,measure){
                     else return(rev_ma(dch,method,random,measure)[2])
 
                  })
+            
             #We test modification of upper bound of confidence interval when 
             #suppressing events to second arm of each study
             Lsupp <- sapply(1:nrow(ddoi),function(i){
@@ -57,7 +60,22 @@ frag_ma <- function(data,method,random,measure){
                     }                
             }            
             #increment of fragility    
-            frag <- frag + 1        
+            frag <- frag + 1
+
+            nb_test <- nb_test + 2*nrow(ddoi)
+
+            #Progress function for app                                                
+            if(with_progress) {
+                progress$inc(2*nrow(ddoi),
+                             detail = ifelse(frag < 50,
+                                             paste(c("Calculating ",nb_test," new pooled treatment effects"),
+                                                   collapse = ""),
+                                             paste(c("Wow! Fragility Index superior to 50! Still calculating ",
+                                                     nb_test," new pooled treatment effects"),
+                                                   collapse = ""))
+                             )
+                             }
+            
         }        
     }
     
@@ -107,6 +125,20 @@ frag_ma <- function(data,method,random,measure){
 
             #increment of fragility    
             frag <- frag + 1
+            nb_test <- nb_test + 2*nrow(ddoi)
+
+            #Progress function for app                                    
+            if(with_progress) {
+                progress$inc(2*nrow(ddoi),
+                             detail = ifelse(frag < 50,
+                                             paste(c("Calculating ",nb_test," new pooled treatment effects"),
+                                                   collapse = ""),
+                                             paste(c("Wow! Fragility Index superior to 50! Still calculating ",
+                                                     nb_test," new pooled treatment effects"),
+                                                   collapse = ""))
+                             )
+                             }
+                        
         }
     }
 

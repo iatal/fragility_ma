@@ -126,12 +126,15 @@ shinyServer(
             validate(need(input$method!="PETO" | (input$method=="PETO" & input$measure=="OR"),
               "Peto's method is only possible with Measure = Odds Ratio"))
 
-#            withProgress(message = 'Calculating Fragility', value = 0, {
+            #Progress
+            progress <- shiny::Progress$new(min=1, max = 50*2*nrow(data()))
+            on.exit(progress$close())
+            progress$set(message = "Evaluating fragility", value = 0)
                 
-                if(pval()<0.05) frag_ma(data(),input$method,input$random,input$measure)
-                    else frag_ma_ns(data(),input$method,input$random,input$measure)
+                if(pval()<0.05) frag_ma(data(),input$method,input$random,input$measure,with_progress=TRUE,progress)
+                    else frag_ma_ns(data(),input$method,input$random,input$measure,with_progress=TRUE,progress)
                         
-#                })
+
 
             })
         

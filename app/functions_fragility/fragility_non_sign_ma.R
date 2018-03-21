@@ -1,5 +1,5 @@
 #Fragility function for statistically non-significant results
-frag_ma_ns <- function(data,method,random,measure){    
+frag_ma_ns <- function(data,method,random,measure,with_progress = FALSE, progress = NULL){    
     
     #data should have as columns: EVENTS_1, EVENTS_2, TOTAL_1, TOTAL_2
     #method can be: "Inverse", "MH" or "PETO"
@@ -10,6 +10,7 @@ frag_ma_ns <- function(data,method,random,measure){
     frag <- c(0,0)
     ddoiA <- ddoi
     ddoiB <- ddoi
+    nb_test <- 0
 
     init <- rev_ma(ddoi,method,random,measure)
 
@@ -64,7 +65,22 @@ frag_ma_ns <- function(data,method,random,measure){
                 }                
         }            
         #increment of fragility    
-        frag[1] <- frag[1] + 1   
+        frag[1] <- frag[1] + 1
+        
+        nb_test <- nb_test + 2*nrow(ddoi)
+                    
+        #Progress function for app            
+        if(with_progress) {
+            progress$inc(2*nrow(ddoi),
+                         detail = ifelse(frag[1] < 50,
+                                         paste(c("Calculating ", nb_test," new pooled treatment effects"),
+                                               collapse = ""),
+                                         paste(c("The Fragility Index may be superior to 50... Still calculating ",
+                                                 nb_test," new pooled treatment effects"),
+                                               collapse = ""))
+                         )
+                         }
+                    
 
         }
 
@@ -123,6 +139,21 @@ frag_ma_ns <- function(data,method,random,measure){
             }
         #increment of fragility    
         frag[2] <- frag[2] + 1   
+        nb_test <- nb_test + 2*nrow(ddoi)
+
+        if(frag[2] > frag[1]) break
+            
+        #Progress function for app
+        if(with_progress) {
+            progress$inc(2*nrow(ddoi),
+                         detail = ifelse(frag[2] < 50,
+                                         paste(c("Calculating ", nb_test," new pooled treatment effects"),
+                                               collapse = ""),
+                                         paste(c("Wow! Fragility Index is be superior to 50! Still calculating ",
+                                                 nb_test," new pooled treatment effects"),
+                                               collapse = ""))
+                         )
+                         }
 
         }
 

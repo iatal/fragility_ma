@@ -7,3 +7,4 @@ TO DO:
 - [ ] in forest plot, for RD, put absolute values, not log
 - [ ] add a "see details" button to see trial level modifications
 - [ ] add "computing"
+- [ ] fragility NS: make unique loop for getting significance while going to both sides of the CI
