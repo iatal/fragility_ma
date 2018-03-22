@@ -3,6 +3,8 @@
 
 forest_plot <- function(meta1, fragile=FALSE, modifs = NULL){
     
+    if(is.null(meta1)) return(NULL)
+        
     cex <- 1.5
     n <- length(meta1$event.e)
 

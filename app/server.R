@@ -99,7 +99,7 @@ shinyServer(
         })
 
         output$is_significant <- renderText({
-            cat(file=stderr(), "statistical significativity set", "\n")
+#           cat(file=stderr(), "statistical significativity set", "\n")
             paste0("Forest plot of a statistically ",ifelse(pval()<0.05,"","non-"),
                    "significant meta-analysis of ",nrow(data()), " trials")
         })
@@ -126,15 +126,23 @@ shinyServer(
             validate(need(input$method!="PETO" | (input$method=="PETO" & input$measure=="OR"),
               "Peto's method is only possible with Measure = Odds Ratio"))
 
-            #Progress
-            progress <- shiny::Progress$new(min=1, max = 50*2*nrow(data()))
-            on.exit(progress$close())
-            progress$set(message = "Evaluating fragility", value = 0)
+            if(pval()<0.05) {
+                #Progress
+                progress <- shiny::Progress$new(min=1, max = 50*2*nrow(data()))
+                on.exit(progress$close())
+                progress$set(message = "Evaluating fragility", value = 0)
+                #Evaluate Fragility
+                frag_ma(data(),input$method,input$random,input$measure,with_progress=TRUE,progress)
                 
-                if(pval()<0.05) frag_ma(data(),input$method,input$random,input$measure,with_progress=TRUE,progress)
-                    else frag_ma_ns(data(),input$method,input$random,input$measure,with_progress=TRUE,progress)
-                        
-
+                }
+            else {
+                #Progress
+                progress <- shiny::Progress$new(min=1, max = 50*4*nrow(data()))
+                on.exit(progress$close())
+                progress$set(message = "Evaluating fragility", value = 0)
+                #Evaluate Fragility
+                frag_ma_ns(data(),input$method,input$random,input$measure,with_progress=TRUE,progress)
+                }
 
             })
         
@@ -143,28 +151,37 @@ shinyServer(
             validate(need(input$method!="PETO" | (input$method=="PETO" & input$measure=="OR"),
                           "Peto's method is only possible with Measure = Odds Ratio"))
             
-            metabin(event.e=EVENTS_1, n.e=TOTAL_1, event.c=EVENTS_2, n.c=TOTAL_2,
-                    studlab = STUDY_ID,
-                    data = fragility()[[2]],
-                    method = isolate(input$method),
-                    sm= isolate(input$measure),
-                    comb.random = isolate(input$random=="YES"),
-                    comb.fixed = isolate(input$random=="NO"),
-                    RR.cochrane = TRUE)
+            if(fragility()[1]==Inf) return(NULL)
+                
+            else {
+                metabin(event.e=EVENTS_1, n.e=TOTAL_1, event.c=EVENTS_2, n.c=TOTAL_2,
+                        studlab = STUDY_ID,
+                        data = fragility()[[2]],
+                        method = isolate(input$method),
+                        sm= isolate(input$measure),
+                        comb.random = isolate(input$random=="YES"),
+                        comb.fixed = isolate(input$random=="NO"),
+                        RR.cochrane = TRUE)
+                }
             })
 
-        #modifs_frag <- reactive({
         modifs_frag <- reactiveValues(val = NULL)
                 
         observeEvent(fragility(),{
-            modifs_frag$val <- data()[,c("EVENTS_1","EVENTS_2")] - fragility()[[2]][,c("EVENTS_1","EVENTS_2")]
+            if(fragility()[1]==Inf) modifs_frag$val <- NA
+            else modifs_frag$val <- data()[,c("EVENTS_1","EVENTS_2")] - fragility()[[2]][,c("EVENTS_1","EVENTS_2")]
         })
 
+        #Text explaining Nb of modifications        
         output$fragility_index <- renderText({
-            paste0("After ",fragility()[[1]]," specific event-status modification", 
-                   ifelse(fragility()[[1]]==1," is","s,")," the conclusion of the meta-analysis was turned to statistically ",
-                   ifelse(pval()<0.05,"non-",""),"significant.")
+            if(fragility()[1]==Inf) return("The total number of participants is not sufficient to have a statistically significant meta-analysis...")
+            else {    
+                paste0("After ",fragility()[[1]]," specific event-status modification", 
+                       ifelse(fragility()[[1]]==1," is","s,")," the conclusion of the meta-analysis was turned to statistically ",
+                       ifelse(pval()<0.05,"non-",""),"significant.")
+                }
         })
+            
         output$fragility_index2 <- renderText({
             paste0("Fragility index = ",fragility()[[1]])
         })
