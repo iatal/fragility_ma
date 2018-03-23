@@ -181,18 +181,55 @@ shinyServer(
                        ifelse(pval()<0.05,"non-",""),"significant.")
                 }
         })
-            
+        
+        #Text: Fragility Index = ...
         output$fragility_index2 <- renderText({
             paste0("Fragility index = ",fragility()[[1]])
         })
-                
         
+        #Forest plot    
         observe({
             output$fragilePlot <- renderPlot({
                 forest_plot(meta2(),fragile = TRUE, modifs = modifs_frag$val)
                 }, height = 200*nrow(data())/7 + 40)})
                 
-        outputOptions(output, "show", suspendWhenHidden = FALSE) 
+        #Text describing in detail nb of modifications        
+        output$modifications_text <- renderUI({
+            if(fragility()[1]==Inf) return(NULL)
+            else {
+                MDF <- modifs_frag$val
+                stds <- as.character(data()[MDF$EVENTS_1!=0 | MDF$EVENTS_2!=0,"STUDY_ID"])
+                MDF <- MDF[MDF$EVENTS_1!=0 | MDF$EVENTS_2!=0,]
+                
+                list(
+                    tags$h4("A total of ",tags$b(nrow(MDF)),
+                            ifelse(nrow(MDF)==1,"trial was","trials were"),
+                            " modified:"),
+                    tags$ul(
+                        lapply(1:nrow(MDF),function(i){
+                            tags$li(stds[i],": ",
+                                    ifelse(MDF$EVENTS_1[i]!=0,
+                                           paste(c(abs(MDF$EVENTS_1[i])," event",
+                                                   ifelse(abs(MDF$EVENTS_1[i])>1,"s",""),
+                                                   ifelse(MDF$EVENTS_1[i]<0,
+                                                          " added "," suppressed "),
+                                                   "in Arm A. "),collapse=""),
+                                           ""),
+                                    ifelse(MDF$EVENTS_2[i]!=0,
+                                           paste(c(abs(MDF$EVENTS_2[i])," event",
+                                                   ifelse(abs(MDF$EVENTS_2[i])>1,"s",""),
+                                                   ifelse(MDF$EVENTS_2[i]<0,
+                                                          " added "," suppressed "),
+                                                   "in Arm B."),collapse=""),
+                                           "")
+                                   )
+                            })
+                    )
+                )
+                }
+        })
+
+        outputOptions(output, "show", suspendWhenHidden = FALSE)
         
 })
 

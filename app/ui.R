@@ -4,25 +4,34 @@ shinyUI(
     navbarPage("Fragilty Index of meta-analyses", id = "inTabset",
                        
         tabPanel("About", value = "about",
-                 h3("The Fragility Index of meta-analyses"),
-                 tags$p("The conclusion of a meta-analysis of a binary outcome could be changed if the outcomes of a few patients were modified within the randomized controlled trials included in it."),
-                 tags$p(tags$strong("The Fragility Index for meta-analyses"), 
-                        " of randomized controlled trials is an intuitive measure for the confidence we have in the conclusions of a meta-analysis."),
-                 tags$p("It is defined as the ",
-                        tags$em("minimum number of patients"),
-                        " from one or more trials included in the meta-analysis for which a modification on the event status (ie, changing events to non-events, or non-events to events) would change the statistical significance of the pooled treatment effect."),
-                 tags$p("After specific event-status modifications, a statistically significant pooled treatment effect could be turned non-significant, and a statistically non-significant treatment effect could be turned significant."),
-                 
-                 h3("Evaluate the Fragility Index for your own meta-analysis"),
-                 tags$p(actionLink('jumpToFragility', "Evaluate the fragility"),
-                        " of the conclusions of your own meta-analysis!"),
-                 h3("How does it work"),
-                 tags$p("The method used to evaluate the Fragility Index of meta-analyses is schematically represented ",actionLink('jumpToMethod', "here"),". You can also check our code on ",
-                        tags$a(href="https://github.com/iatal/fragility_ma/tree/master/app/functions_fragility",
-                               "Github.")),
-                 tags$p(""),
-                 tags$p("Contact: ignacioatal--at--gmail--dot--com")
-                 
+                 fluidRow(
+                     column(6,                                                             
+                         h3("The Fragility Index of meta-analyses"),
+                         tags$p("The conclusion of a meta-analysis of a binary outcome could be changed if the outcomes of a few patients were modified within the randomized controlled trials included in it."),
+                         tags$p(tags$strong("The Fragility Index for meta-analyses"), 
+                                " of randomized controlled trials is an intuitive measure for the confidence we have in the conclusions of a meta-analysis."),
+                         tags$p("It is defined as the ",
+                                tags$em("minimum number of patients"),
+                                " from one or more trials included in the meta-analysis for which a modification on the event status (ie, changing events to non-events, or non-events to events) would change the statistical significance of the pooled treatment effect."),
+                         tags$p("After specific event-status modifications, a statistically significant pooled treatment effect could be turned non-significant, and a statistically non-significant treatment effect could be turned significant."),
+
+                         h3("Evaluate the Fragility Index for your own meta-analysis"),
+                         tags$p(actionLink('jumpToFragility', "Evaluate the fragility"),
+                                " of the conclusions of your own meta-analysis!"),
+                         h3("How does it work"),
+                         tags$p("The method used to evaluate the Fragility Index of meta-analyses is based on an iterative re-evaluation of the statistical significance of the pooled treatment effect of modified meta-analyses, iteratively derived from the original meta-analysis by performing single event-status modifications in each arm of each trial in turn."),   
+                         tags$p("A schematic represention is available ",actionLink('jumpToMethod', "here"),". You can also check our code on ",
+                                tags$a(href="https://github.com/iatal/fragility_ma/tree/master/app/functions_fragility",
+                                       "Github.")),
+                         tags$p(""),
+                         tags$p("Contact: ignacioatal--at--gmail--dot--com")
+                            ),
+                     column(6,
+                            HTML("<center><h4><u>Example of a statistically significant meta-analysis with Fragility Index = 2</u></h4></center>"),
+                            tags$p(""),
+                            HTML("<center><img src='schema_exemple_plain2.svg' alt='' width='600px' /></center>")                            
+                            )
+                     )
                  ),
         
         
@@ -66,7 +75,8 @@ shinyUI(
                                                h4(textOutput("fragility_index"),align="center"),
                                                h3(textOutput("fragility_index2"),align="center")),
                                       plotOutput('fragilePlot',width = "100%",height = "auto"),
-                                      tags$hr()),
+                                      tags$hr(),
+                                      htmlOutput("modifications_text")),
                      width = 9)
                  ),
 

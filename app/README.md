@@ -5,7 +5,5 @@ This is the shiny app giving a user-friendly access to the evaluation of the fra
 =============================
 TO DO:
 - [ ] in forest plot, for RD, put absolute values, not log
-- [ ] add a "see details" button to see trial level modifications
 - [ ] cut too long names in plot (up to 20 charact.)
 - [ ] add log messages
-- [ ] add pedagogical figure in about
