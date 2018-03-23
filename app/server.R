@@ -63,10 +63,10 @@ shinyServer(
                                          collapse=", "),
                                    "should be positive!",collapse=" ")) %then%
                         #is there at least 1 event?
-                        need(sum(dr$EVENTS_1)+sum(dr$EVENTS_1)!=0,
+                        need(sum(dr$EVENTS_1)+sum(dr$EVENTS_2)!=0,
                              "Please provide data with at least 1 event in at least 1 arm") %then%
                         #total sample sizes should be greater than number of events
-                        need(sum(dr$EVENTS_1>dr$TOTAL_1)+sum(dr$EVENTS_1>dr$TOTAL_1)==0,
+                        need(sum(dr$EVENTS_1>dr$TOTAL_1)+sum(dr$EVENTS_2>dr$TOTAL_2)==0,
                              "The number of events should be lower than the sample size!")
                     )
                     return(dr)
