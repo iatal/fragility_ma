@@ -24,6 +24,10 @@ shinyServer(
             updateTabsetPanel(session, "inTabset",
                               selected = "fragility")
             })
+        observeEvent(input$jumpToExample, {
+            updateTabsetPanel(session, "inTabset",
+                              selected = "example")
+            })
         
         
         data <- reactive({
